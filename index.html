@@ -3,55 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>咖啡豆库存管理系统</title>
+    <title>咖啡豆庫存管理系统</title>
     <link rel="stylesheet" href="styles.css">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Firebase CDN -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.2/firebase-firestore.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>咖啡豆库存管理系统</h1>
-        
-        <!-- 库存显示区 -->
-        <section id="inventory">
-            <h2>当前库存</h2>
-            <table>
-                <tr>
-                    <th>类型</th>
-                    <th>数量 (克)</th>
-                    <th>操作</th>
-                </tr>
-                <tr>
-                    <td>生豆</td>
-                    <td id="raw-beans">0</td>
-                    <td><button onclick="editInventory('raw')">编辑</button></td>
-                </tr>
-                <tr>
-                    <td>熟豆</td>
-                    <td id="roasted-beans">0</td>
-                    <td><button onclick="editInventory('roasted')">编辑</button></td>
-                </tr>
-            </table>
-            <p id="alert" class="hidden">警报：库存低于100克！</p>
+        <h1>咖啡豆庫存管理系统</h1>
+        <!-- 登入區 -->
+        <section id="auth">
+            <button id="login-btn">登入 (Google)</button>
+            <button id="logout-btn" class="hidden">登出</button>
+            <p id="user-info"></p>
         </section>
         
-        <!-- 烘焙记录添加区 -->
+        <!-- 單位切換 -->
+        <section id="units">
+            <label>單位: 
+                <select id="unit-select">
+                    <option value="g">克 (g)</option>
+                    <option value="lb">磅 (lb)</option>
+                </select>
+            </label>
+        </section>
+        
+        <!-- 庫存顯示區（支援多品種） -->
+        <section id="inventory">
+            <h2>当前庫存</h2>
+            <table id="inventory-table">
+                <tr>
+                    <th>類型</th>
+                    <th>品種</th>
+                    <th>數量</th>
+                    <th>操作</th>
+                </tr>
+            </table>
+            <p id="alert" class="hidden">警報：庫存低于100！</p>
+            <h3>總庫存統計</h3>
+            <p id="total-stats"></p>
+            <canvas id="pie-chart" width="400" height="200"></canvas>
+            <canvas id="line-chart" width="400" height="200"></canvas>
+        </section>
+        
+        <!-- 烘焙記錄添加區（加dropdown） -->
         <section id="roast-form">
-            <h2>添加烘焙记录</h2>
+            <h2>添加烘焙記錄</h2>
             <form onsubmit="addRoast(event)">
                 <label>日期: <input type="date" id="date" required></label>
-                <label>消耗生豆 (克): <input type="number" id="raw-used" min="0" required></label>
-                <label>产出熟豆 (克): <input type="number" id="roasted-produced" min="0" required></label>
+                <label>品種: 
+                    <select id="variety-select">
+                        <option value="Arabica">Arabica</option>
+                        <option value="Robusta">Robusta</option>
+                        <option value="Other">其他</option>
+                    </select>
+                </label>
+                <label>消耗生豆: <input type="number" id="raw-used" min="0" required></label>
+                <label>產出熟豆: <input type="number" id="roasted-produced" min="0" required></label>
                 <button type="submit">添加</button>
             </form>
         </section>
         
-        <!-- 烘焙记录列表 -->
+        <!-- 烘焙記錄列表（加搜尋） -->
         <section id="roast-history">
-            <h2>烘焙记录</h2>
+            <h2>烘焙記錄</h2>
+            <input type="text" id="search-input" placeholder="搜尋日期或品種...">
+            <button onclick="exportCSV()">匯出CSV</button>
             <table id="history-table">
                 <tr>
                     <th>日期</th>
-                    <th>消耗生豆 (克)</th>
-                    <th>产出熟豆 (克)</th>
+                    <th>品種</th>
+                    <th>消耗生豆</th>
+                    <th>產出熟豆</th>
                     <th>操作</th>
                 </tr>
             </table>
