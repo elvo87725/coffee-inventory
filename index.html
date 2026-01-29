@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>咖啡豆库存管理系统</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>咖啡豆库存管理系统</h1>
+        
+        <!-- 库存显示区 -->
+        <section id="inventory">
+            <h2>当前库存</h2>
+            <table>
+                <tr>
+                    <th>类型</th>
+                    <th>数量 (克)</th>
+                    <th>操作</th>
+                </tr>
+                <tr>
+                    <td>生豆</td>
+                    <td id="raw-beans">0</td>
+                    <td><button onclick="editInventory('raw')">编辑</button></td>
+                </tr>
+                <tr>
+                    <td>熟豆</td>
+                    <td id="roasted-beans">0</td>
+                    <td><button onclick="editInventory('roasted')">编辑</button></td>
+                </tr>
+            </table>
+            <p id="alert" class="hidden">警报：库存低于100克！</p>
+        </section>
+        
+        <!-- 烘焙记录添加区 -->
+        <section id="roast-form">
+            <h2>添加烘焙记录</h2>
+            <form onsubmit="addRoast(event)">
+                <label>日期: <input type="date" id="date" required></label>
+                <label>消耗生豆 (克): <input type="number" id="raw-used" min="0" required></label>
+                <label>产出熟豆 (克): <input type="number" id="roasted-produced" min="0" required></label>
+                <button type="submit">添加</button>
+            </form>
+        </section>
+        
+        <!-- 烘焙记录列表 -->
+        <section id="roast-history">
+            <h2>烘焙记录</h2>
+            <table id="history-table">
+                <tr>
+                    <th>日期</th>
+                    <th>消耗生豆 (克)</th>
+                    <th>产出熟豆 (克)</th>
+                    <th>操作</th>
+                </tr>
+            </table>
+        </section>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
